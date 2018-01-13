@@ -12,10 +12,21 @@
     <b-tag>#softlines</b-tag>
 
     <h2 class="title is-spaced">Agenda</h2>
-    <ul>
-      <li v-for="item in agendaItems">
-         {{item[".key"]}}
-        <b-input type="text" v-bind:value="item.text" placeholder="New Meeting" @input="updateAgendaItems(item['.key'])"/>
+    <ul class="list">
+      <li class="list__item" v-for="(item, index) in agendaItems">
+        <b-input 
+          type="text" 
+          v-bind:value="item.text" 
+          placeholder="New Meeting" 
+          @focus="onFocus(item['.key'], index, agendaItems)"
+          @blur="onBlur(item['.key'], index)"
+          @input="updateItem(agendaItems)"/>
+
+      </li>
+      <li>
+        <b-input v-model="agendaItem"
+
+          @input="addItem(agendaItems)"/>
       </li>
     </ul>
 
@@ -38,25 +49,41 @@
 <script>
 import firebase from 'firebase'
 
+// How do i know where i have selected?
+
 var config = {
     apiKey: "AIzaSyAY3rOqi6SX9NSyOX14DmTt8p2BQyUeP3A",
     authDomain: "ketchup-e0b85.firebaseapp.com",
     databaseURL: "https://ketchup-e0b85.firebaseio.com/"
   };
 
-var firebaseApp = firebase.initializeApp(config)
-var db = firebaseApp.database()
+// var firebaseApp = firebase.initializeApp(config)
+// var db = firebaseApp.database()
 
 export default {
   name: 'EditStrategy',
   data () {
     return {
-      currentSelectedInputIndex: Number
+      currentSelectedInputIndex: Number,
+      currentSelectedKey: String,
+      selectedSection: String,
+      agendaItem: ''
     }
   },
   methods: {
-    updateAgendaItems(e) {
+    updateItem(e) {
       console.log('updating..', e)
+    },
+    addItem(e) {
+      console.log('adding', e)
+    },
+    onBlur(e, index) {
+      console.log('blur', e, index)
+    },
+    onFocus(e, index) {
+      console.log('focus', e, index)
+      this.currentSelectedInputIndex = index;
+      this.currentSelectedKey = e;
     },
     detectKeyPressed(e) {
       console.log('key pressed', e)
@@ -69,11 +96,14 @@ export default {
     },
     addNewItem() {
       this.$firebaseRefs.agendaItems.push({
-        text: 'new item...'
+        text: this.agendaItem
       })
+
+      this.agendaItem = '';
     },
     deleteItem() {
-
+      console.log('delete item');
+      this.$firebaseRefs.agendaItems.child(this.currentSelectedKey).remove()
     },
     shiftFocusToNewItem() {
 
@@ -86,7 +116,17 @@ export default {
     // })
   },
   firebase: {
-    agendaItems: db.ref('/agenda/')
+    // agendaItems: db.ref('/agenda/')
   }
 }
 </script>
+
+<style lang="scss">
+  .list {
+    padding: 32px 0;
+
+    .list__item {
+      margin-bottom: 16px;
+    }
+  }
+</style>
