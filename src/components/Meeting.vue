@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <button class="button is-primary" @click="goBack">Back</button>
+    {{meetingData}}
     <div class="columns">
       <div class="column">
         <div class="title is-spaced">
@@ -86,14 +87,15 @@ import moment from 'moment'
         .once('value', function(snapshot) {
           if (snapshot.val()) {
             _this.meetingData = {
-              agendaList: snapshot.val().agendaList,
-              notesList: snapshot.val().notesList,
-              actionsList: snapshot.val().actionsList
+              agendaList: snapshot.val().agendaList ? snapshot.val().agendaList : [],
+              notesList: snapshot.val().notesList ? snapshot.val().notesList : [],
+              actionsList: snapshot.val().actionsList ? snapshot.val().actionsList : []
             }
             
           }
           
         })
+
     },
     methods: {
       goBack() {
@@ -101,7 +103,7 @@ import moment from 'moment'
       },
       updateLists() {
         // console.log(e, 'update!')
-        firebase.database().ref('/meetingData/' + this.$route.params.meeting).update(this.meetingData)
+        firebase.database().ref('/meetingData/' + this.$route.params.meeting).set(this.meetingData)
       },
       updateMeta() {
         firebase.database().ref('/meetings/' + this.$route.params.meeting).update({

@@ -37,8 +37,7 @@
     },
     props: {
       items: {
-        type: Array,
-        default: []
+        type: Array
       },
       title: {
         type: String 
@@ -49,7 +48,7 @@
     },
     methods: {
       addItem(context) {
-        if (this.newItemText !== '' && this.selectedSection) {
+        if (this.newItemText !== '' && this.selectedSection && this.items) {
           this.items.push(this.newItemText)
           this.changedEvent = {
             title: this.title,
