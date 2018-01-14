@@ -5,6 +5,7 @@
       <div class="column">
         <div class="title is-spaced">
           <div>Title</div>
+          <div>{{ dateCreated }}</div>
           <b-input 
             @blur="updateMeta"
             v-model="title"/>
@@ -48,6 +49,7 @@
 <script>
 import firebase from 'firebase'
 import Checklist from './Checklist'
+import moment from 'moment'
 
   export default {
     name: 'Meeting',
@@ -57,6 +59,8 @@ import Checklist from './Checklist'
     data () {
       return {
         title: '',
+        dateCreated: '',
+        formattedDate: moment(1515945142020).format(),
         meetingData: {
           agendaList: [],
           notesList: [],
@@ -64,15 +68,16 @@ import Checklist from './Checklist'
         }
       }
     },
+    computed: {
+    },
     created() {
       var _this = this
-      // this.updateLists()
-      // this.updateMeta()
       firebase.database()
         .ref('/meetings/' + this.$route.params.meeting)
         .on('value', function(snapshot) {
           if (snapshot.val()) {
             _this.title = snapshot.val().title
+            _this.dateCreated = moment(snapshot.val().dateCreated).fromNow()
           }
         })
 
@@ -92,14 +97,14 @@ import Checklist from './Checklist'
     },
     methods: {
       goBack() {
-        this.$router.push('/meetings/')
+        this.$router.push('/')
       },
       updateLists() {
         // console.log(e, 'update!')
-        firebase.database().ref('/meetingData/' + this.$route.params.meeting).set(this.meetingData)
+        firebase.database().ref('/meetingData/' + this.$route.params.meeting).update(this.meetingData)
       },
       updateMeta() {
-        firebase.database().ref('/meetings/' + this.$route.params.meeting).set({
+        firebase.database().ref('/meetings/' + this.$route.params.meeting).update({
           title: this.title
         })
       }
