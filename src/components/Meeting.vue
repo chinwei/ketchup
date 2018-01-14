@@ -1,12 +1,10 @@
 <template>
   <div class="container">
     <button class="button is-primary" @click="goBack">Back</button>
-    {{meetingData}}
     <div class="columns">
       <div class="column">
         <div class="title is-spaced">
-          <div>Title</div>
-          <div>{{ dateCreated }}</div>
+          <div class="timestamp">{{ dateCreated }}</div>
           <b-input 
             @blur="updateMeta"
             v-model="title"/>
@@ -84,7 +82,7 @@ import moment from 'moment'
 
       firebase.database()
         .ref('/meetingData/' + this.$route.params.meeting)
-        .once('value', function(snapshot) {
+        .on('value', function(snapshot) {
           if (snapshot.val()) {
             _this.meetingData = {
               agendaList: snapshot.val().agendaList ? snapshot.val().agendaList : [],
@@ -117,3 +115,8 @@ import moment from 'moment'
   }  
 </script>
 
+<style>
+  .timestamp {
+    font-size: 13px;
+  }
+</style>
