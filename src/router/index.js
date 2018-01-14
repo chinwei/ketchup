@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
-import EditMeeting from '@/components/EditMeeting'
-import Inputs from '@/components/Inputs'
+import Meeting from '@/components/Meeting'
+import Meetings from '@/components/Meetings'
 
 Vue.use(Router)
 
@@ -13,15 +13,15 @@ export default new Router({
       name: 'HelloWorld',
       component: HelloWorld
     },
-    // {
-    //   path: '/edit-meeting',
-    //   name: 'EditMeeting',
-    //   component: EditMeeting
-    // },
     {
-      path: '/inputs',
-      name: 'Inputs',
-      component: Inputs
+      path: '/meetings',
+      name: 'Meetings',
+      component: Meetings
+    },
+    {
+      path: '/meetings/:meeting',
+      name: 'Meeting',
+      component: Meeting
     }
   ]
 })

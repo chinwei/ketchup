@@ -1,10 +1,9 @@
 <template>
   <ul class="list">
-    {{selectedSection}}
-    <li class="list__item" v-for="(item, index) in Items">
+    <li class="list__item" v-for="(item, index) in items">
       <b-input 
         v-bind:value="item" 
-        v-model="Items[index]"
+        v-model="items[index]"
         @blur="onBlur"
         @focus="updateSelectionContext('update', 'agenda', index)"/>
     </li>
@@ -23,14 +22,25 @@
     name: 'Checklist',
     data () {
       return {
-        Items: ['sdfds', 'sdf'],
         newItemText: '',
         selectedSection: false,
         selectionContext: {
           state: String,
           context: String,
           index: Number
+        },
+        changedEvent: {
+          index: Number,
+          value: String
         }
+      }
+    },
+    props: {
+      items: {
+        type: Array
+      },
+      title: {
+        type: String 
       }
     },
     created () {
@@ -39,24 +49,38 @@
     methods: {
       addItem(context) {
         if (this.newItemText !== '' && this.selectedSection) {
-          this.Items.push(this.newItemText)
+          this.items.push(this.newItemText)
+          this.changedEvent = {
+            title: this.title,
+            index: this.items.length - 1,
+            value: this.newItemText
+          }
+          this.$emit('updateList', this.changedEvent)
           this.newItemText = ''
         }
       },
       deleteItem() {
         if (this.selectedSection) {
-          this.Items.splice(this.selectionContext.index, 1)
+          this.items.splice(this.selectionContext.index, 1)
         }
       },
       updateItem(context) {
-        this.Items[context.index]
+        this.items[context.index]
       },
       onBlur() {
         this.selectedSection = false
+        if (this.selectionContext.index !== undefined) {
+          this.changedEvent = {
+            title: this.title,
+            index: this.selectionContext.index,
+            value: this.items[this.selectionContext.index]
+          }
+          this.$emit('updateList', this.changedEvent)
+        }
+
+
       },
       updateSelectionContext(state, context, index) {
-        // How to find the current selection context?
-
         this.selectedSection = true;
         this.selectionContext = {
           state: state,
@@ -65,7 +89,6 @@
         }
       },
       detectKeyPressed(e) {
-        // console.log('key pressed', e)
         if (e.key === 'Enter' && e.ctrlKey === false) {
           if (this.selectionContext.state === 'add') {
             this.addItem(this.selectionContext.context);
