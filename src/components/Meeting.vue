@@ -11,12 +11,7 @@
         </div>
       </div>
     </div>
-    <div class="columns">
-      <div class="column">
-        {{ meetingData }}
-      </div>
-    </div>
-
+    
     <div class="columns">
       <div class="column">
         <div class="title">
@@ -70,14 +65,36 @@ import Checklist from './Checklist'
       }
     },
     created() {
-      console.log(this.$route.params.meeting)
-      // console.log(firebase.database())
+      var _this = this
+      // this.updateLists()
+      // this.updateMeta()
+      firebase.database()
+        .ref('/meetings/' + this.$route.params.meeting)
+        .on('value', function(snapshot) {
+          if (snapshot.val()) {
+            _this.title = snapshot.val().title
+          }
+        })
+
+      firebase.database()
+        .ref('/meetingData/' + this.$route.params.meeting)
+        .once('value', function(snapshot) {
+          if (snapshot.val()) {
+            _this.meetingData = {
+              agendaList: snapshot.val().agendaList,
+              notesList: snapshot.val().notesList,
+              actionsList: snapshot.val().actionsList
+            }
+            
+          }
+          
+        })
     },
     methods: {
       goBack() {
         this.$router.push('/meetings/')
       },
-      updateLists(e) {
+      updateLists() {
         // console.log(e, 'update!')
         firebase.database().ref('/meetingData/' + this.$route.params.meeting).set(this.meetingData)
       },

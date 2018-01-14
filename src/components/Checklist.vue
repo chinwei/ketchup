@@ -37,7 +37,8 @@
     },
     props: {
       items: {
-        type: Array
+        type: Array,
+        default: []
       },
       title: {
         type: String 
