@@ -1,7 +1,14 @@
 <template>
   <div id="app" style="padding-top: 90px;">
     <!-- <button @click="login" class="button is-primary">Sign in</button> -->
-    <div class="app-header"></div>
+    <div class="app-header">
+      <div class="icon header__icon">
+        <svg>
+          <use href="/static/images/sprites.svg#tomato"></use>
+        </svg>
+      </div>
+
+    </div>
     <router-view/>
   </div>
 </template>
@@ -96,6 +103,10 @@ body {
 
 .app-header {
   height: 50px;
+  padding: 0 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-bottom: 1px #f3f3f3 solid;
   box-shadow: 0 0 4px #eee;
   position: fixed;
@@ -105,6 +116,9 @@ body {
   z-index: 9999;
 }
 
+.container {
+  padding: 8px;
+}
 
 
 

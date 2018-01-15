@@ -140,12 +140,12 @@ import moment from 'moment'
     > input.input {
       font-family: 'Nunito Sans', Helvetica, Arial, sans-serif;
       font-size: 32px;
+      font-weight: 800;
       padding: 0 0 1px 0;
       background: none;
       border-radius: 0;
       border: none;
       outline: none;
-      font-weight: 800;
       box-shadow: none;
       height: unset;
 
