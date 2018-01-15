@@ -12,6 +12,7 @@
   "dependencies": {
     "buefy": "^0.6.2",
     "firebase": "^4.8.2",
+    "firebaseui": "^2.5.1",
     "moment": "^2.20.1",
     "vue": "^2.5.13",
     "vue-router": "^3.0.1",

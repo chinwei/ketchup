@@ -1,13 +1,15 @@
 <template>
-  <div class="container">
+  <div class="container" style="width: 600px">
     <button @click="newMeeting" class="button is-primary">Meet now</button>
     <div class="columns">
       <div class="column">
-        <ul class="list list--card">
-          <li @click="editMeeting(item['.key'])" class="list__item" v-for="item in meetings">
+        <div class="header--view">
+          Inbox
+        </div>
+        <ul class="list">
+          <li @click="editMeeting(key)" class="list__item" v-for="(item, key) in meetings">
             <div class="list__header">{{ item.title }}</div>
             <div>{{ item.dateCreated }}</div>
-            <!-- <div>{{ item['.key'] }}</div> -->
           </li>
         </ul>
       </div>
@@ -23,9 +25,21 @@ export default {
   name: 'Meetings',
   data() {
     return {
+      meetings: {}
     }
   },
   created() {
+    var _this = this;
+
+    firebase.database()
+      .ref('/meetings/')
+      .on('value', function(snapshot) {
+        if (snapshot.val()) {
+          console.log('snapshot: ', snapshot.val())
+          _this.meetings = snapshot.val();
+
+        }
+      })
   },
   computed: {
   },
@@ -38,27 +52,23 @@ export default {
       this.$router.push('/meetings/' + key)
     },
     editMeeting(key) {
+
       this.$router.push('/meetings/' + key)
     }
   },
   firebase: {
-    meetings: firebase.database().ref('/meetings/')
+    // meetings: firebase.database().ref('/meetings/')
   }
 }
 </script>
 
 <style lang="scss">
-  .list--card {
-    width: 600px;
-    margin: 0 auto;
+  .list {
 
     .list__item {
       background: white;
-      border: 1px #f3f3f3 solid;
-      border-radius: 3px;
-      box-shadow: 0 0 4px #eee;
-      padding: 16px;
-      margin-bottom: 16px;
+      // padding: 16px;
+      // margin-bottom: 16px;
       cursor: pointer;
 
       &:hover {
@@ -69,5 +79,11 @@ export default {
     .list__header {
       font-size: 21px
     }
+  }
+
+  .header--view {
+    font-family: 'Nunito Sans', Helvetica, Arial, sans-serif;
+    font-size: 32px;
+    font-weight: 800;
   }
 </style>

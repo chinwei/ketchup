@@ -1,16 +1,21 @@
 <template>
   <ul class="list">
     <li class="list__item" v-for="(item, index) in items">
-      <b-input 
-        v-bind:value="item" 
-        v-model="items[index]"
-        @blur="onBlur"
-        @focus="updateSelectionContext('update', 'agenda', index)"/>
+      <div class="dot"></div>
+      <b-field>
+          <b-input
+            ref="items"
+            v-bind:value="item" 
+            v-model="items[index]"
+            @blur="onBlur"
+            @focus="updateSelectionContext('update', 'agenda', index)"/>
+      </b-field>
+      
     </li>
     <li class="list__item">
       <b-input 
         v-model="newItemText" 
-        placeholder="Add Agenda..." 
+        placeholder="Add new..." 
         @blur="onBlur"
         @focus="updateSelectionContext('add', 'agenda')"/>
     </li>
@@ -41,10 +46,14 @@
       },
       title: {
         type: String 
+      },
+      keypressed: {
+        type: [KeyboardEvent, Function]
       }
     },
     created () {
       window.addEventListener('keydown', this.detectKeyPressed)
+
     },
     methods: {
       addItem(context) {
@@ -65,7 +74,6 @@
         }
       },
       updateItem(context) {
-        this.items[context.index]
       },
       onBlur() {
         this.selectedSection = false
@@ -77,8 +85,6 @@
           }
           this.$emit('updateList', this.changedEvent)
         }
-
-
       },
       updateSelectionContext(state, context, index) {
         this.selectedSection = true;
@@ -91,9 +97,14 @@
       detectKeyPressed(e) {
         if (e.key === 'Enter' && e.ctrlKey === false) {
           if (this.selectionContext.state === 'add') {
+
             this.addItem(this.selectionContext.context);
+
           } else if (this.selectionContext.state === 'update') {
-            this.updateItem(this.selectionContext)
+            
+            this.$refs
+              .items[this.selectionContext.index]
+              .$el.childNodes[0].blur();
           }
 
         } else if (e.key === 'Enter' && e.ctrlKey === true) {
@@ -106,26 +117,44 @@
 
 <style lang="scss">
   .list {
-    padding: 32px 0;
+    padding: 8px 0 16px 0;
 
     .list__item {
       margin-bottom: 8px;
+      position: relative;
 
       input {
         outline: none;
         box-shadow: none;
         border: 0;
+        border-radius: 0;
+        padding: 0 0 1px 0;
+        font-size: 18px;
         &:hover {
-          border: 1px #eee solid;
+          border-bottom: 1px #ccc dashed;
+          padding: 0;
         }
 
         &:focus {
-          box-shadow: 0 2px 3px #eee;
-          background: #f3f3f3;
+          border-bottom: 1px #555 dashed;
+          padding: 0;
         }
       }
     }
+  }
 
+  .field {
+    width: 100%
+  }
 
+  .dot {
+    height: 6px;
+    width: 6px;
+    background: #FF5E5E;
+    border-radius: 20px;
+    margin-right: 16px;
+    position: absolute;
+    top: 17px;
+    left: -20px;
   }
 </style>

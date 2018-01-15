@@ -1,11 +1,24 @@
 <template>
-  <div id="app">
+  <div id="app" style="padding-top: 90px;">
+    <!-- <button @click="login" class="button is-primary">Sign in</button> -->
+    <div class="app-header"></div>
     <router-view/>
   </div>
 </template>
 
 <script>
 import firebase from 'firebase'
+import firebaseui from 'firebaseui'
+
+var uiConfig = {
+  signInSuccessUrl: '/',
+  signInOptions: [
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+  ]
+};
+
+
+
 
 var config = {
     apiKey: "AIzaSyAY3rOqi6SX9NSyOX14DmTt8p2BQyUeP3A",
@@ -17,7 +30,38 @@ var firebaseApp = firebase.initializeApp(config)
 var db = firebaseApp.database()
 
 export default {
-  name: 'app'
+  name: 'app',
+  created() {
+
+    var ui = new firebaseui.auth.AuthUI(firebase.auth());
+
+  },
+  methods: {
+    login() {
+
+      var provider = new firebase.auth.GoogleAuthProvider();
+
+      firebase.auth().signInWithPopup(provider).then(function(result) {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        var token = result.credential.accessToken;
+        // The signed-in user info.
+        var user = result.user;
+
+        console.log(user);
+        // ...
+      }).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // The email of the user's account used.
+        var email = error.email;
+        // The firebase.auth.AuthCredential type that was used.
+        var credential = error.credential;
+        // ...
+      });
+    }
+    
+  }
 }
 </script>
 
@@ -47,8 +91,18 @@ $u-colors: (
 
 
 body {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  background: map-get($u-colors, 'aqua haze');
+  font-family: 'Nunito Sans', Helvetica, Arial, sans-serif;
+}
+
+.app-header {
+  height: 50px;
+  border-bottom: 1px #f3f3f3 solid;
+  box-shadow: 0 0 4px #eee;
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  background: white;
+  z-index: 9999;
 }
 
 

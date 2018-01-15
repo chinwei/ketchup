@@ -7,6 +7,7 @@ import Buefy from 'buefy'
 import 'buefy/lib/buefy.css'
 
 import firebase from 'firebase'
+import firebaseui from 'firebaseui'
 import VueFire from 'vuefire'
 
 

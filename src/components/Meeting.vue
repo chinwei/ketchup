@@ -1,44 +1,55 @@
 <template>
-  <div class="container">
-    <button class="button is-primary" @click="goBack">Back</button>
+  <div class="container" style="width: 600px">
     <div class="columns">
-      <div class="column">
-        <div class="title is-spaced">
-          <div class="timestamp">{{ dateCreated }}</div>
-          <b-input 
-            @blur="updateMeta"
-            v-model="title"/>
+      <div class="column view-header">
+        <div @click="goBack" class="icon view-header__icon">
+          <svg>
+            <use href="/static/images/sprites.svg#arrow-left"></use>
+          </svg>
         </div>
+        <b-input
+          ref='title'
+          class="header--view"
+          placeholder="Give the meeting a title"
+          @blur="updateMeta"
+          v-model="title"/>
+        <div class="timestamp">{{ dateCreated }}</div>
       </div>
     </div>
     
     <div class="columns">
       <div class="column">
-        <div class="title">
-          Agenda
+
+        <div class="meeting-section">
+          <div class="header--section">
+            Agenda
+          </div>
+          <checklist
+            :items.sync="meetingData.agendaList"
+            :keypressed="keyPressed"
+            :title="'agendaList'"
+            v-on:updateList="updateLists"/>
+          
         </div>
-        <checklist
-          :items.sync="meetingData.agendaList"
-          :title="'agendaList'"
-          v-on:updateList="updateLists"/>
-      </div>
-      <div class="column">
-        <div class="title is-spaced">
-          Notes
+        <div class="meeting-section">
+          <div class="header--section">
+            Notes
+          </div>
+          <checklist
+            :items.sync="meetingData.notesList"
+            :title="'notesList'"
+            v-on:updateList="updateLists"/>
         </div>
-        <checklist
-          :items.sync="meetingData.notesList"
-          :title="'notesList'"
-          v-on:updateList="updateLists"/>
-      </div>
-      <div class="column">
-        <div class="title is-spaced">
-          Action Items
+      
+        <div class="meeting-section">
+          <div class="header--section">
+            Action Items
+          </div>
+          <checklist
+            :items.sync="meetingData.actionsList"
+            :title="'actionsList'"
+            v-on:updateList="updateLists"/>
         </div>
-        <checklist
-          :items.sync="meetingData.actionsList"
-          :title="'actionsList'"
-          v-on:updateList="updateLists"/>
       </div>
       
     </div>
@@ -59,7 +70,7 @@ import moment from 'moment'
       return {
         title: '',
         dateCreated: '',
-        formattedDate: moment(1515945142020).format(),
+        keyPressed: KeyboardEvent,
         meetingData: {
           agendaList: [],
           notesList: [],
@@ -67,9 +78,13 @@ import moment from 'moment'
         }
       }
     },
-    computed: {
+    mounted() {
+      this.$refs.title.focus();
     },
     created() {
+
+      window.addEventListener('keydown', this.detectKeyPressed)
+
       var _this = this
       firebase.database()
         .ref('/meetings/' + this.$route.params.meeting)
@@ -105,18 +120,96 @@ import moment from 'moment'
       },
       updateMeta() {
         firebase.database().ref('/meetings/' + this.$route.params.meeting).update({
-          title: this.title
+          title: this.title ? this.title : 'Untitled Meeting'
         })
+      },
+      detectKeyPressed(e) {
+        this.keyPressed = e;
       }
-    },
-    firebase: {
-      // meetingData: firebase.database().ref('/meetingData/' + this.$route.params.meeting)
     }
   }  
 </script>
 
-<style>
+<style lang="scss">
   .timestamp {
-    font-size: 13px;
+    font-size: 14px;
+  }
+
+  .header--view {
+    margin-bottom: 4px;
+    > input.input {
+      font-family: 'Nunito Sans', Helvetica, Arial, sans-serif;
+      font-size: 32px;
+      padding: 0 0 1px 0;
+      background: none;
+      border-radius: 0;
+      border: none;
+      outline: none;
+      font-weight: 800;
+      box-shadow: none;
+      height: unset;
+
+      &:hover {
+        border-bottom: 1px #ccc dashed;
+        padding: 0;
+      }
+
+      &:hover {
+        border-bottom: 1px #555 dashed;
+        padding: 0;
+      }
+
+
+
+    }
+  }
+
+  .header--section {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .meeting-section {
+    margin-bottom: 24px;
+  }
+
+  .icon {
+    height: 32px;
+    width: 32px;
+
+    > svg {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .view-header {
+    position: relative;
+    margin-bottom: 24px;
+
+    .view-header__icon {
+      // width: 50px;
+      // height: 50px;
+      border-radius: 100px;
+      position: absolute;
+      top: 20px;
+      left: -80px;
+      cursor: pointer;
+      
+      svg {
+        fill: #ccc;
+      }
+
+      &:hover {
+        // background: #f3f3f3;
+
+        svg {
+          fill: #333;
+        }
+      }
+
+    }
+
+
   }
 </style>
