@@ -9,6 +9,7 @@
           <div @click="newMeeting" class="button is-black">Start Meeting</div>
         </div>
         <div class="header--section">Recent</div>
+
         <ul class="list" style="padding: 8px 0">
           <li @click="editMeeting(key)" class="list__item" v-for="(item, key) in meetings">
             <div class="list__header">{{ item.title }}</div>
@@ -29,21 +30,30 @@ export default {
   name: 'Meetings',
   data() {
     return {
-      meetings: {}
+      meetings: {},
+      owner: {}
     }
   },
   created() {
     var _this = this;
 
+    const userKey = Object.keys(window.localStorage)
+      .filter(it => it.startsWith('firebase:authUser'))[0];
+    const owner = userKey ? JSON.parse(localStorage.getItem(userKey)) : undefined;
+    this.owner = owner;
+    
     firebase.database()
       .ref('/meetings/')
+      .orderByChild('owner/email')
+      .equalTo(this.owner.email)
       .on('value', function(snapshot) {
         if (snapshot.val()) {
-          // console.log('snapshot: ', snapshot.val())
           _this.meetings = snapshot.val();
-
         }
       })
+
+
+    
   },
   filters: {
     formatDate(value) {
@@ -55,7 +65,11 @@ export default {
   methods: {
     newMeeting() {
       var key = firebase.database().ref('/meetings/').push({
-        dateCreated: firebase.database.ServerValue.TIMESTAMP
+        dateCreated: firebase.database.ServerValue.TIMESTAMP,
+        owner: {
+          displayName: this.owner.displayName,
+          email: this.owner.email
+        }
       }).key
 
       this.$router.push('/meetings/' + key)

@@ -1,12 +1,17 @@
 <template>
   <div id="app" style="padding-top: 90px;">
-    <!-- <button @click="login" class="button is-primary">Sign in</button> -->
+    
     <div class="app-header">
+      <div></div>
       <div class="icon header__icon">
         <svg>
           <use href="/static/images/sprites.svg#tomato"></use>
         </svg>
       </div>
+      <div>
+        <button v-if="!user" @click="login" class="button">Sign in</button>
+      </div>
+      
 
     </div>
     <router-view/>
@@ -38,9 +43,19 @@ var db = firebaseApp.database()
 
 export default {
   name: 'app',
+  data() {
+    return {
+      user: {}
+    }
+  },
   created() {
 
     var ui = new firebaseui.auth.AuthUI(firebase.auth());
+
+    const userKey = Object.keys(window.localStorage)
+      .filter(it => it.startsWith('firebase:authUser'))[0];
+    const user = userKey ? JSON.parse(localStorage.getItem(userKey)) : undefined;
+    this.user = user;
 
   },
   methods: {
@@ -50,11 +65,15 @@ export default {
 
       firebase.auth().signInWithPopup(provider).then(function(result) {
         // This gives you a Google Access Token. You can use it to access the Google API.
-        var token = result.credential.accessToken;
-        // The signed-in user info.
-        var user = result.user;
 
-        console.log(user);
+
+        // var token = result.credential.accessToken;
+        // The signed-in user info.
+        // var user = result.user;
+
+        
+
+
         // ...
       }).catch(function(error) {
         // Handle Errors here.
@@ -105,7 +124,7 @@ body {
   height: 50px;
   padding: 0 16px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   border-bottom: 1px #f3f3f3 solid;
   box-shadow: 0 0 4px #eee;
