@@ -1,39 +1,42 @@
 <template>
   <div class="container" style="width: 600px">
     <div class="columns">
-      <div class="column view-header">
-        <div @click="goBack" class="icon view-header__icon">
+      <div class="column">
+        <div class="view-header">
+          <div @click="goBack" class="icon view-header__back-icon">
           <svg>
             <use href="/static/images/sprites.svg#arrow-left"></use>
           </svg>
         </div>
         <b-input
           ref='title'
-          class="header--view"
+          class="view-header__title"
           placeholder="Give the meeting a title"
           @blur="updateMeta"
           v-model="title"/>
-        <div class="timestamp">{{ dateCreated }}</div>
+
+        <div class="view-header__timestamp">{{ dateCreated }}</div>
+      </div>
       </div>
     </div>
     
     <div class="columns">
       <div class="column">
 
-        <div class="meeting-section">
-          <div class="header--section">
-            Agenda
+        <div class="list">
+          <div class="list__header">
+            <div class="list__header-title">Agenda</div>
           </div>
           <checklist
             :items.sync="meetingData.agendaList"
             :keypressed="keyPressed"
             :title="'agendaList'"
             v-on:updateList="updateLists"/>
-          
         </div>
-        <div class="meeting-section">
-          <div class="header--section">
-            Notes
+
+        <div class="list">
+          <div class="list__header">
+            <div class="list__header-title">Notes</div>
           </div>
           <checklist
             :items.sync="meetingData.notesList"
@@ -41,9 +44,9 @@
             v-on:updateList="updateLists"/>
         </div>
       
-        <div class="meeting-section">
-          <div class="header--section">
-            Action Items
+        <div class="list">
+          <div class="list__header">
+            <div class="list__header-title">Action Item</div>
           </div>
           <checklist
             :items.sync="meetingData.actionsList"
@@ -131,11 +134,11 @@ import moment from 'moment'
 </script>
 
 <style lang="scss">
-  .timestamp {
+  .view-header__timestamp {
     font-size: 14px;
   }
 
-  .header--view {
+  .view-header__title {
     margin-bottom: 4px;
     > input.input {
       font-family: 'Nunito Sans', Helvetica, Arial, sans-serif;
@@ -158,13 +161,10 @@ import moment from 'moment'
         border-bottom: 1px #555 dashed;
         padding: 0;
       }
-
-
-
     }
   }
 
-  .header--section {
+  .list__header-title {
     font-size: 16px;
     font-weight: 700;
   }
@@ -187,12 +187,9 @@ import moment from 'moment'
     position: relative;
     margin-bottom: 24px;
 
-    .view-header__icon {
-      // width: 50px;
-      // height: 50px;
-      border-radius: 100px;
+    .view-header__back-icon {
       position: absolute;
-      top: 20px;
+      top: 8px;
       left: -80px;
       cursor: pointer;
       
@@ -201,8 +198,6 @@ import moment from 'moment'
       }
 
       &:hover {
-        // background: #f3f3f3;
-
         svg {
           fill: #333;
         }

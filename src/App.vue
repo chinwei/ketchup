@@ -9,7 +9,8 @@
         </svg>
       </div>
       <div>
-        <button v-if="!user" @click="login" class="button">Sign in</button>
+        <button v-if="!user" @click="login" class="button">Sign In</button>
+        <button v-if="user" @click="logout" class="button">Sign Out</button>
       </div>
       
 
@@ -52,6 +53,8 @@ export default {
 
     var ui = new firebaseui.auth.AuthUI(firebase.auth());
 
+    this.authListener();
+
     const userKey = Object.keys(window.localStorage)
       .filter(it => it.startsWith('firebase:authUser'))[0];
     const user = userKey ? JSON.parse(localStorage.getItem(userKey)) : undefined;
@@ -84,6 +87,32 @@ export default {
         // The firebase.auth.AuthCredential type that was used.
         var credential = error.credential;
         // ...
+      });
+    },
+    logout() {
+      firebase.auth().signOut().then(function() {
+        // Sign-out successful.
+      }).catch(function(error) {
+        // An error happened.
+      });
+    },
+    authListener() {
+      firebase.auth().onAuthStateChanged(function(user){
+        if (user) {
+          // User is signed in.
+          var displayName = user.displayName;
+          var email = user.email;
+          var emailVerified = user.emailVerified;
+          var photoURL = user.photoURL;
+          var isAnonymous = user.isAnonymous;
+          var uid = user.uid;
+          var providerData = user.providerData;
+          // [START_EXCLUDE]
+          console.log('auth changed!')
+          // [END_EXCLUDE]
+        } else {
+          // User is signed out.
+        }
       });
     }
     

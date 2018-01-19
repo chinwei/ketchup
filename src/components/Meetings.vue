@@ -6,7 +6,7 @@
           <div class="header--view">
             Inbox
           </div>
-          <div @click="newMeeting" class="button is-black">Start Meeting</div>
+          <div v-if="user" @click="newMeeting" class="button is-black">Start Meeting</div>
         </div>
         <div class="header--section">Recent</div>
 
@@ -31,7 +31,7 @@ export default {
   data() {
     return {
       meetings: {},
-      owner: {}
+      user: {}
     }
   },
   created() {
@@ -39,13 +39,13 @@ export default {
 
     const userKey = Object.keys(window.localStorage)
       .filter(it => it.startsWith('firebase:authUser'))[0];
-    const owner = userKey ? JSON.parse(localStorage.getItem(userKey)) : undefined;
-    this.owner = owner;
+    const user = userKey ? JSON.parse(localStorage.getItem(userKey)) : undefined;
+    this.user = user;
     
     firebase.database()
       .ref('/meetings/')
       .orderByChild('owner/email')
-      .equalTo(this.owner.email)
+      .equalTo(this.user.email)
       .on('value', function(snapshot) {
         if (snapshot.val()) {
           _this.meetings = snapshot.val();
@@ -67,8 +67,8 @@ export default {
       var key = firebase.database().ref('/meetings/').push({
         dateCreated: firebase.database.ServerValue.TIMESTAMP,
         owner: {
-          displayName: this.owner.displayName,
-          email: this.owner.email
+          displayName: this.user.displayName,
+          email: this.user.email
         }
       }).key
 
@@ -116,7 +116,6 @@ export default {
     font-family: 'Nunito Sans', Helvetica, Arial, sans-serif;
     font-size: 32px;
     font-weight: 800;
-    margin-bottom: 24px;
   }
 
   .header--section {

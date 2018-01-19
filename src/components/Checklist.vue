@@ -1,10 +1,13 @@
 <template>
-  <ul class="list">
-    <li class="list__item" v-for="(item, index) in items">
-      <div class="dot"></div>
+  <ul class="checklist">
+    <li class="checklist-item" v-for="(item, index) in items">
+      <div class="checklist-item__dot"></div>
+      <!-- <input class="" type="text" v-bind:value="item"> -->
       <b-field>
           <b-input
             ref="items"
+            :type="'textarea'"
+            rows="1"
             v-bind:value="item" 
             v-model="items[index]"
             @blur="onBlur"
@@ -12,8 +15,10 @@
       </b-field>
       
     </li>
-    <li class="list__item">
+    <li class="checklist-item">
       <b-input 
+        :type="'textarea'"
+        rows="1"
         v-model="newItemText" 
         placeholder="Add new..." 
         @blur="onBlur"
@@ -116,14 +121,14 @@
 </script>
 
 <style lang="scss">
-  .list {
+  .checklist {
     padding: 8px 0 16px 0;
 
-    .list__item {
+    .checklist-item {
       margin-bottom: 8px;
       position: relative;
 
-      input {
+      input, textarea {
         outline: none;
         box-shadow: none;
         border: 0;
@@ -147,14 +152,14 @@
     width: 100%
   }
 
-  .dot {
+  .checklist-item__dot {
     height: 6px;
     width: 6px;
     background: #FF5E5E;
     border-radius: 20px;
     margin-right: 16px;
     position: absolute;
-    top: 17px;
+    top: 11px;
     left: -20px;
   }
 </style>
