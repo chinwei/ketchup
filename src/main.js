@@ -10,12 +10,8 @@ import 'buefy/lib/buefy.css'
 
 import firebase from 'firebase'
 import firebaseui from 'firebaseui'
-import VueFire from 'vuefire'
 import Vuex from 'vuex'
 
-
-
-Vue.use(VueFire)
 Vue.use(Buefy)
 
 Vue.config.productionTip = false
