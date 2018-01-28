@@ -81,6 +81,13 @@
       updateItem(context) {
       },
       onBlur() {
+
+        if (this.selectionContext.state === 'add') {
+
+          this.addItem(this.selectionContext.context);
+
+        }
+
         this.selectedSection = false
         if (this.selectionContext.index !== undefined) {
           this.changedEvent = {

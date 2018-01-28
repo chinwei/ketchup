@@ -35,6 +35,7 @@ export default {
     }
   },
   created() {
+    this.getMeetings();
   },
   filters: {
     formatDate(value) {
@@ -76,6 +77,7 @@ export default {
             _this.meetings = snapshot.val();
           }
         })
+
 
     },
     newMeeting() {
