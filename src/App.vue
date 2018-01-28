@@ -13,7 +13,7 @@
           v-if="!isLoggedIn" 
           @click="$store.dispatch('login');" 
           class="button">Sign In</button>
-        <button v-if="isLoggedIn" @click="$store.dispatch('logout')" class="button">Sign Out</button>
+        <button v-if="isLoggedIn" @click="logout" class="button">Sign Out</button>
       </div>
       
 
@@ -47,6 +47,10 @@ export default {
     }
   },
   methods: {
+    logout () {
+      this.$store.dispatch('logout');
+      this.$router.replace('/');
+    },
     authListener() {
       firebase.auth().onAuthStateChanged(function(user){
         if (user) {

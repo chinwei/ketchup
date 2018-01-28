@@ -24,23 +24,24 @@ var firebaseApp = firebase.initializeApp(config)
 var db = firebaseApp.database()
 
 export default {
-      methodOne: function() {
-        console.log('one');
+      getUserDetails () {
+        const userKey = Object.keys(window.localStorage)
+          .filter(it => it.startsWith('firebase:authUser'))[0];
+        const user = userKey ? JSON.parse(localStorage.getItem(userKey)) : undefined;
+
+        return user;
       },
       login: function() {
+        var _this = this;
 
         var provider = new firebase.auth.GoogleAuthProvider();
+
         firebase.auth().signInWithPopup(provider).then(function(result) {
           var token = result.credential.accessToken;
           localStorage.setItem('token', JSON.stringify(token));
 
-          const userKey = Object.keys(window.localStorage)
-            .filter(it => it.startsWith('firebase:authUser'))[0];
-          const user = userKey ? JSON.parse(localStorage.getItem(userKey)) : undefined;
-
-          store.commit(LOGIN_SUCCESS, user);
+          store.commit(LOGIN_SUCCESS, _this.getUserDetails());
           
-          // ...
         }).catch(function(error) {
           // Handle Errors here.
           var errorCode = error.code;

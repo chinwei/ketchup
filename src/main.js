@@ -22,6 +22,5 @@ new Vue({
   router,
   template: '<App/>',
   store: store,
-  auth: auth,
   components: { App }
 })
