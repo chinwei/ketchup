@@ -10,6 +10,8 @@
         </div>
         <div class="header--section">Recent</div>
 
+        <p v-if="!isLoggedIn">You have to sign in first!</p>
+
         <ul class="list" style="padding: 8px 0">
           <li @click="editMeeting(key)" class="list__item" v-for="(item, key) in meetings">
             <div class="list__header">{{ item.title }}</div>
