@@ -6,7 +6,7 @@
           <div class="header--view">
             Inbox
           </div>
-          <div v-if="user" @click="newMeeting" class="button is-black">Start Meeting</div>
+          <div v-if="isLoggedIn" @click="newMeeting" class="button is-black">Start Meeting</div>
         </div>
         <div class="header--section">Recent</div>
 
@@ -35,25 +35,6 @@ export default {
     }
   },
   created() {
-    var _this = this;
-
-    const userKey = Object.keys(window.localStorage)
-      .filter(it => it.startsWith('firebase:authUser'))[0];
-    const user = userKey ? JSON.parse(localStorage.getItem(userKey)) : undefined;
-    this.user = user;
-    
-    firebase.database()
-      .ref('/meetings/')
-      .orderByChild('owner/email')
-      .equalTo(this.user.email)
-      .on('value', function(snapshot) {
-        if (snapshot.val()) {
-          _this.meetings = snapshot.val();
-        }
-      })
-
-
-    
   },
   filters: {
     formatDate(value) {
@@ -62,13 +43,47 @@ export default {
       }
     } 
   },
+  computed: {
+    isLoggedIn () {
+      return this.$store.getters.isLoggedIn
+    },
+    getUserDetails() {
+      return this.$store.getters.getUserDetails
+    }
+  },
+  watch: {
+    isLoggedIn () {
+
+      if (this.isLoggedIn) {
+        this.getMeetings();  
+      } else {
+        this.meetings = [];
+      }
+      
+    }
+  },
   methods: {
+    getMeetings() {
+
+      var _this = this;
+
+      firebase.database()
+        .ref('/meetings/')
+        .orderByChild('owner/email')
+        .equalTo(_this.getUserDetails.email)
+        .on('value', function(snapshot) {
+          if (snapshot.val()) {
+            _this.meetings = snapshot.val();
+          }
+        })
+
+    },
     newMeeting() {
       var key = firebase.database().ref('/meetings/').push({
         dateCreated: firebase.database.ServerValue.TIMESTAMP,
         owner: {
-          displayName: this.user.displayName,
-          email: this.user.email
+          displayName: this.getUserDetails.displayName,
+          email: this.getUserDetails.email
         }
       }).key
 
@@ -79,9 +94,7 @@ export default {
       this.$router.push('/meetings/' + key)
     }
   },
-  firebase: {
-    // meetings: firebase.database().ref('/meetings/')
-  }
+
 }
 </script>
 

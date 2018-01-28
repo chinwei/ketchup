@@ -1,6 +1,5 @@
 <template>
   <div id="app" style="padding-top: 90px;">
-    
     <div class="app-header">
       <div></div>
       <div class="icon header__icon">
@@ -9,8 +8,12 @@
         </svg>
       </div>
       <div>
-        <button v-if="!user" @click="login" class="button">Sign In</button>
-        <button v-if="user" @click="logout" class="button">Sign Out</button>
+        <button 
+          :class="{'is-loading': isPending}"
+          v-if="!isLoggedIn" 
+          @click="$store.dispatch('login');" 
+          class="button">Sign In</button>
+        <button v-if="isLoggedIn" @click="$store.dispatch('logout')" class="button">Sign Out</button>
       </div>
       
 
@@ -23,79 +26,27 @@
 import firebase from 'firebase'
 import firebaseui from 'firebaseui'
 
-var uiConfig = {
-  signInSuccessUrl: '/',
-  signInOptions: [
-    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-  ]
-};
-
-
-
-
-var config = {
-    apiKey: "AIzaSyAY3rOqi6SX9NSyOX14DmTt8p2BQyUeP3A",
-    authDomain: "ketchup-e0b85.firebaseapp.com",
-    databaseURL: "https://ketchup-e0b85.firebaseio.com/"
-  };
-
-var firebaseApp = firebase.initializeApp(config)
-var db = firebaseApp.database()
-
 export default {
   name: 'app',
   data() {
     return {
-      user: {}
     }
   },
   created() {
-
-    var ui = new firebaseui.auth.AuthUI(firebase.auth());
-
     this.authListener();
-
-    const userKey = Object.keys(window.localStorage)
-      .filter(it => it.startsWith('firebase:authUser'))[0];
-    const user = userKey ? JSON.parse(localStorage.getItem(userKey)) : undefined;
-    this.user = user;
-
+  },
+  computed: {
+    isLoggedIn () {
+      return this.$store.getters.isLoggedIn
+    },
+    isPending () {
+      return this.$store.getters.isPending
+    },
+    userDetails () {
+      return this.$store.getters.getUserDetails
+    }
   },
   methods: {
-    login() {
-
-      var provider = new firebase.auth.GoogleAuthProvider();
-
-      firebase.auth().signInWithPopup(provider).then(function(result) {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-
-
-        // var token = result.credential.accessToken;
-        // The signed-in user info.
-        // var user = result.user;
-
-        
-
-
-        // ...
-      }).catch(function(error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // The email of the user's account used.
-        var email = error.email;
-        // The firebase.auth.AuthCredential type that was used.
-        var credential = error.credential;
-        // ...
-      });
-    },
-    logout() {
-      firebase.auth().signOut().then(function() {
-        // Sign-out successful.
-      }).catch(function(error) {
-        // An error happened.
-      });
-    },
     authListener() {
       firebase.auth().onAuthStateChanged(function(user){
         if (user) {
@@ -108,7 +59,7 @@ export default {
           var uid = user.uid;
           var providerData = user.providerData;
           // [START_EXCLUDE]
-          console.log('auth changed!')
+          console.log('auth changed!', user);
           // [END_EXCLUDE]
         } else {
           // User is signed out.
