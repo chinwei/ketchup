@@ -84,9 +84,15 @@ import moment from 'moment'
     mounted() {
       this.$refs.title.focus();
     },
+    computed: {
+      getKeyPressed () {
+        return this.$store.getters.getKeyPressed;
+      }
+    },
     created() {
 
-      window.addEventListener('keydown', this.detectKeyPressed)
+      window.addEventListener('keydown', this.detectKeyPressed);
+      // window.addEventListener('keyup', this.keyUp);
 
       var _this = this
       firebase.database()
@@ -128,6 +134,13 @@ import moment from 'moment'
       },
       detectKeyPressed(e) {
         this.keyPressed = e;
+        this.$store.dispatch('keyDown', {
+          ctrlKey: e.ctrlKey,
+          key: e.key
+        });
+      },
+      keyUp() {
+        this.$store.dispatch('keyUp')
       }
     }
   }  

@@ -2,11 +2,9 @@
   <ul class="checklist">
     <li class="checklist-item" v-for="(item, index) in items">
       <div class="checklist-item__dot"></div>
-      <!-- <input class="" type="text" v-bind:value="item"> -->
       <b-field>
           <b-input
             ref="items"
-            :type="'textarea'"
             rows="1"
             v-bind:value="item" 
             v-model="items[index]"
@@ -17,7 +15,6 @@
     </li>
     <li class="checklist-item">
       <b-input 
-        :type="'textarea'"
         rows="1"
         v-model="newItemText" 
         placeholder="Add new..." 
@@ -51,14 +48,38 @@
       },
       title: {
         type: String 
-      },
-      keypressed: {
-        type: [KeyboardEvent, Function]
       }
     },
-    created () {
-      window.addEventListener('keydown', this.detectKeyPressed)
+    computed: {
+      getKeyPressed () {
+        return this.$store.getters.getKeyPressed;
+      }
+    },
+    watch: {
+      getKeyPressed (e) {
+        // console.log('watching', e);
 
+        if (e) {
+          if (e.key === 'Enter' && !e.ctrlKey) {
+            if (this.selectionContext.state === 'add') {
+
+              this.addItem(this.selectionContext.context);
+
+            } else if (this.selectionContext.state === 'update') {
+              
+              this.$refs
+                .items[this.selectionContext.index]
+                .$el.childNodes[0].blur();
+            }
+
+          } else if (e.key === 'Enter' && e.ctrlKey) {
+            this.deleteItem()
+          }
+        }
+       
+        
+
+      }
     },
     methods: {
       addItem(context) {
@@ -105,24 +126,7 @@
           context: context,
           index: index
         }
-      },
-      detectKeyPressed(e) {
-        if (e.key === 'Enter' && e.ctrlKey === false) {
-          if (this.selectionContext.state === 'add') {
-
-            this.addItem(this.selectionContext.context);
-
-          } else if (this.selectionContext.state === 'update') {
-            
-            this.$refs
-              .items[this.selectionContext.index]
-              .$el.childNodes[0].blur();
-          }
-
-        } else if (e.key === 'Enter' && e.ctrlKey === true) {
-          this.deleteItem()
-        }
-      },
+      }
     }
   }  
 </script>
@@ -130,27 +134,27 @@
 <style lang="scss">
   .checklist {
     padding: 8px 0 16px 0;
+  }
 
-    .checklist-item {
-      margin-bottom: 8px;
-      position: relative;
+  .checklist-item {
+    margin-bottom: 8px;
+    position: relative;
 
-      input, textarea {
-        outline: none;
-        box-shadow: none;
-        border: 0;
-        border-radius: 0;
-        padding: 0 0 1px 0;
-        font-size: 18px;
-        &:hover {
-          border-bottom: 1px #ccc dashed;
-          padding: 0;
-        }
+    input, textarea {
+      outline: none;
+      box-shadow: none;
+      border: 0;
+      border-radius: 0;
+      padding: 0 0 1px 0;
+      font-size: 18px;
+      &:hover {
+        border-bottom: 1px #ccc dashed;
+        padding: 0;
+      }
 
-        &:focus {
-          border-bottom: 1px #555 dashed;
-          padding: 0;
-        }
+      &:focus {
+        border-bottom: 1px #555 dashed;
+        padding: 0;
       }
     }
   }

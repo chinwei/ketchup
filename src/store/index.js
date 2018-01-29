@@ -7,12 +7,15 @@ Vue.use(Vuex)
 const LOGIN = "LOGIN";
 const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 const LOGOUT = "LOGOUT";
+const KEY_DOWN = "KEY_DOWN"
+const KEY_UP = "KEY_UP"
 
 const state = {
   isLoggedIn: localStorage.getItem('token'),
   userDetails: JSON.parse(localStorage.getItem(Object.keys(window.localStorage)
          .filter(it => it.startsWith('firebase:authUser'))[0])),
-  isPending: false
+  isPending: false,
+  keyPressed: null
   
 }
 
@@ -25,7 +28,10 @@ const getters = {
     },
     getUserDetails: state => {
       return state.userDetails
-  }
+    },
+    getKeyPressed: state => {
+      return state.keyPressed
+    }
 }
 
 const mutations = {
@@ -41,6 +47,12 @@ const mutations = {
     LOGOUT (state) {
       state.isLoggedIn = false;
       state.userDetails = null;
+    },
+    KEY_DOWN (state, payload) {
+      state.keyPressed = payload;
+    },
+    KEY_UP (state) {
+      state.keyPressed = null;
     }
 }
 
@@ -49,13 +61,17 @@ const actions = {
   login({ commit }, creds) {
     commit(LOGIN); // show spinner
     auth.login();
-
   },
   logout({ commit }) {
     commit(LOGOUT);
     auth.logout();
+  },
+  keyDown({ commit }, payload) {
+    commit(KEY_DOWN, payload);
+  },
+  keyUp({ commit }) {
+    commit(KEY_UP);
   }
-  
 }
 
 export default new Vuex.Store({
